@@ -1,0 +1,94 @@
+buildscript {
+    ext {
+        kotlin_version = '1.1.61'
+        kotlinLoggingVersion = '1.4.6'
+        springBootVersion = '1.5.9.RELEASE'
+        postgresDriverVersion = '42.1.4'
+
+        slfApiVersion='1.7.25'
+        logstashLogbackEncoderVersion='4.8'
+        janinoVersion='3.0.0'
+
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+plugins {
+
+    id "org.jetbrains.kotlin.plugin.spring" version '1.1.61'
+    id "org.jetbrains.kotlin.plugin.noarg" version '1.1.61'
+    id "org.jetbrains.kotlin.plugin.allopen" version '1.1.61'
+
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+
+apply plugin: "org.jetbrains.kotlin.plugin.spring"
+
+jar {
+    baseName = 'lke'
+    version = '0.0.1-SNAPSHOT'
+}
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+task unitTestsOnly(type: Test) {
+    exclude '**/*IT.*'
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+idea {
+    module {
+        def kaptMain = file('build/generated/source/kapt/main')
+        sourceDirs += kaptMain
+        generatedSourceDirs += kaptMain
+    }
+}
+
+dependencies {
+    // kotlin
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    //Spring Boot
+    compile "org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+
+    //Logging
+    compile "io.github.microutils:kotlin-logging:$kotlinLoggingVersion"
+    compile("org.codehaus.janino:janino:$janinoVersion")
+    compile("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion")
+    compile("org.slf4j:slf4j-api:$slfApiVersion")
+
+    compile "org.postgresql:postgresql:${postgresDriverVersion}"
+
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.3.1'//''4.2'
+}

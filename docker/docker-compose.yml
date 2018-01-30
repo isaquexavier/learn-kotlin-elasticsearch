@@ -1,0 +1,14 @@
+version: '3'
+services:
+  lke-elasticsearch-local:
+    image: local/lke-elasticsearch:latest
+    ports:
+      - "9200:9200"
+  lke-db-local:
+    image: local/lke-db:latest
+    ports:
+      - "5432:5432"
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+      - /var/lib/postgresql/data
